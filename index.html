@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SovereignStack — How It Outperforms Public Cloud & DIY</title>
+  <meta name="description" content="Cloud agility and developer self-service on your terms — 100% sovereign, open-source, and on-premise. Built on Keycloak, OpenBao, Harbor, and our native Deployment Engine.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#ecfeff',
+              100: '#cffafe',
+              200: '#a5f3fc',
+              300: '#67e8f9',
+              400: '#22d3ee',
+              500: '#06b6d4',
+              600: '#0891b2',
+              700: '#0e7490',
+              800: '#155e75',
+              900: '#164e63',
+              950: '#083344',
+            },
+            surface: {
+              darkest: '#05070c',
+              dark: '#0a0e17',
+              card: '#0f172a',
+              cardHover: '#162036',
+              border: '#1e293b',
+              borderLight: '#334155',
+            }
+          },
+          animation: {
+            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'float': 'float 6s ease-in-out infinite',
+            'glow-line': 'glowLine 3s ease-in-out infinite',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-10px)' },
+            },
+            glowLine: {
+              '0%, 100%': { opacity: '0.3' },
+              '50%': { opacity: '0.8' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0a0e17;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #334155;
+    }
+
+    /* Grid & Glow Backgrounds */
+    .bg-grid-pattern {
+      background-size: 40px 40px;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    }
+    .glow-cyan {
+      box-shadow: 0 0 50px -10px rgba(6, 182, 212, 0.25);
+    }
+    .glass-panel {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .glass-panel-light {
+      background: rgba(30, 41, 59, 0.4);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .terminal-scrollbar::-webkit-scrollbar {
+      width: 4px;
+    }
+    .terminal-scrollbar::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 2px;
+    }
+  </style>
+</head>
+<body class="bg-surface-darkest text-slate-100 font-sans antialiased selection:bg-brand-500 selection:text-black min-h-screen relative overflow-x-hidden">
+
+  <!-- Ambient Glow Gradients -->
+  <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+    <div class="absolute -top-40 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-gradient-to-b from-brand-500/15 via-blue-600/10 to-transparent blur-[120px] rounded-full"></div>
+    <div class="absolute top-[35%] -left-64 w-[600px] h-[600px] bg-blue-600/10 blur-[140px] rounded-full"></div>
+    <div class="absolute top-[60%] -right-64 w-[600px] h-[600px] bg-brand-500/10 blur-[140px] rounded-full"></div>
+    <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-indigo-600/10 blur-[120px] rounded-full"></div>
+  </div>
+
+  <!-- Background Grid Canvas Overlay -->
+  <div class="fixed inset-0 bg-grid-pattern opacity-60 pointer-events-none z-0"></div>
+
+  <!-- STICKY NAVIGATION -->
+  <header class="sticky top-0 z-50 w-full glass-panel border-b border-surface-border transition-all duration-200" id="mainHeader">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <!-- Brand Logo -->
+      <a href="#" class="flex items-center gap-3 group">
+        <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-brand-400 via-blue-500 to-indigo-600 p-[1px] shadow-lg shadow-brand-500/20 group-hover:shadow-brand-400/40 transition-all duration-300">
+          <div class="w-full h-full bg-surface-darkest rounded-[7px] flex items-center justify-center">
+            <i data-lucide="shield-check" class="w-5 h-5 text-brand-400 group-hover:scale-110 transition-transform"></i>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="font-bold text-lg tracking-tight text-white flex items-center gap-1.5">
+            Sovereign<span class="text-brand-400 font-mono text-base font-semibold">Stack</span>
+          </span>
+        </div>
+      </a>
+
+      <!-- Desktop Navigation Links -->
+      <nav class="hidden md:flex items-center gap-7 text-sm font-medium text-slate-300">
+        <a href="#comparison" class="hover:text-white transition-colors">vs Hyperscalers</a>
+        <a href="#architecture" class="hover:text-white transition-colors">Architecture</a>
+        <a href="#supply-chain" class="hover:text-white transition-colors">Security Gate</a>
+        <a href="#compliance" class="hover:text-white transition-colors">Compliance</a>
+        <a href="#faq" class="hover:text-white transition-colors">FAQ</a>
+      </nav>
+
+      <!-- Primary CTA Action Button -->
+      <div class="hidden sm:flex items-center gap-3">
+        <button onclick="openMeetingModal()" class="relative group px-4 py-2 text-xs font-semibold text-slate-950 bg-gradient-to-r from-brand-400 via-cyan-300 to-blue-400 rounded-lg shadow-md shadow-brand-500/25 hover:shadow-brand-400/40 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-1.5">
+          <i data-lucide="calendar" class="w-3.5 h-3.5 text-slate-950"></i>
+          <span>Book architecture meeting (30min)</span>
+        </button>
+      </div>
+
+      <!-- Mobile Menu Button -->
+      <button class="md:hidden p-2 rounded-lg text-slate-400 hover:text-white hover:bg-surface-card" onclick="toggleMobileMenu()" aria-label="Toggle Menu">
+        <i data-lucide="menu" id="menuIcon" class="w-6 h-6"></i>
+      </button>
+    </div>
+
+    <!-- Mobile Slide-out Menu -->
+    <div id="mobileMenu" class="hidden md:hidden px-4 pt-2 pb-6 glass-panel border-b border-surface-border space-y-3">
+      <a href="#comparison" onclick="toggleMobileMenu()" class="block py-2 text-slate-300 hover:text-brand-400 text-sm font-medium">vs Hyperscalers Matrix</a>
+      <a href="#console" onclick="toggleMobileMenu()" class="block py-2 text-slate-300 hover:text-brand-400 text-sm font-medium">Platform Console</a>
+      <a href="#architecture" onclick="toggleMobileMenu()" class="block py-2 text-slate-300 hover:text-brand-400 text-sm font-medium">Architecture Stack</a>
+      <a href="#supply-chain" onclick="toggleMobileMenu()" class="block py-2 text-slate-300 hover:text-brand-400 text-sm font-medium">Automated Security Gate</a>
+      <a href="#compliance" onclick="toggleMobileMenu()" class="block py-2 text-slate-300 hover:text-brand-400 text-sm font-medium">Regulatory & Compliance</a>
+      <a href="#faq" onclick="toggleMobileMenu()" class="block py-2 text-slate-300 hover:text-brand-400 text-sm font-medium">Enterprise FAQ</a>
+      <div class="pt-3 border-t border-surface-border flex flex-col gap-2">
+        <button onclick="openMeetingModal(); toggleMobileMenu();" class="w-full py-2.5 text-center text-xs font-semibold text-slate-950 bg-gradient-to-r from-brand-400 to-blue-400 rounded-lg shadow-md">
+          Book architecture meeting (30min)
+        </button>
+      </div>
+    </div>
+  </header>
+  <br>
+  <!-- MAIN CONTAINER -->
+  <main class="relative z-10">
+
+    <!-- 1. HERO & COMPARISON SECTION (STARTING DIRECTLY WITH: How SovereignStack Outperforms Public Cloud & DIY) -->
+    <section id="comparison" class="pt-16 pb-20 md:pt-24 md:pb-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      
+      <!-- Top Hero Block -->
+      <div class="text-center max-w-4xl mx-auto space-y-6">
+        
+        <!-- Top Pill Badge -->
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-950/70 border border-brand-500/30 text-brand-300 text-xs font-mono shadow-inner hover:border-brand-400/60 transition-colors cursor-pointer" onclick="openMeetingModal()">
+          <span class="flex h-2 w-2 relative">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-brand-400"></span>
+          </span>
+          <span class="font-medium">Private Cloud Appliance</span>
+          <span class="text-slate-600">•</span>
+          <span class="text-slate-300">100% Sovereign & On-Premise</span>
+          <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-brand-400"></i>
+        </div>
+
+        <!-- Master Lead Headline -->
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.15]">
+          How SovereignStack Outperforms<br>
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-300 via-blue-400 to-indigo-400">
+            Public Cloud & DIY
+          </span>
+        </h1>
+
+        <!-- Subheadline -->
+        <p class="text-lg sm:text-xl text-slate-300 leading-relaxed font-normal max-w-3xl mx-auto">
+          Cloud agility and developer self-service on your terms — 100% sovereign, open-source, and on-premise. Built on <span class="text-white font-semibold">Keycloak</span>, <span class="text-white font-semibold">OpenBao</span>, <span class="text-white font-semibold">Harbor</span>, and our native <span class="text-white font-semibold">Deployment Engine</span> — zero hyperscaler tax and zero vendor lock-in.
+        </p>
+
+        <!-- Primary Call to Action Buttons -->
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-3">
+          <button onclick="openMeetingModal()" class="w-full sm:w-auto px-8 py-4 text-sm font-bold text-slate-950 bg-gradient-to-r from-brand-400 via-cyan-300 to-blue-400 rounded-xl shadow-xl shadow-brand-500/25 hover:shadow-brand-400/40 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 group">
+            <i data-lucide="calendar" class="w-4 h-4 text-slate-950"></i>
+            <span>Book architecture meeting (30min)</span>
+          </button>
+
+          <a href="#architecture" class="w-full sm:w-auto px-7 py-4 text-sm font-semibold text-white bg-surface-card/90 hover:bg-surface-card border border-surface-border hover:border-slate-500 rounded-xl transition-all flex items-center justify-center gap-2 group">
+            <i data-lucide="layers" class="w-4 h-4 text-brand-400"></i>
+            <span>Explore Architecture Tiers</span>
+          </a>
+        </div>
+
+        <!-- Compliance & Key Value Badges -->
+        <div class="pt-6 grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl mx-auto">
+          <div class="glass-panel-light p-3 rounded-xl border border-surface-border/60 flex items-center gap-2.5">
+            <div class="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400">
+              <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+            </div>
+            <div class="text-left">
+              <p class="text-xs font-bold text-white">GDPR & NIS2</p>
+              <p class="text-[10px] text-slate-400">100% EU & Global Safe</p>
+            </div>
+          </div>
+
+          <div class="glass-panel-light p-3 rounded-xl border border-surface-border/60 flex items-center gap-2.5">
+            <div class="p-1.5 rounded-lg bg-brand-500/10 text-brand-400">
+              <i data-lucide="server" class="w-4 h-4"></i>
+            </div>
+            <div class="text-left">
+              <p class="text-xs font-bold text-white">Bare-Metal Ready</p>
+              <p class="text-[10px] text-slate-400">Air-Gapped or VM</p>
+            </div>
+          </div>
+
+          <div class="glass-panel-light p-3 rounded-xl border border-surface-border/60 flex items-center gap-2.5">
+            <div class="p-1.5 rounded-lg bg-blue-500/10 text-blue-400">
+              <i data-lucide="lock" class="w-4 h-4"></i>
+            </div>
+            <div class="text-left">
+              <p class="text-xs font-bold text-white">Zero Telemetry</p>
+              <p class="text-[10px] text-slate-400">No Phoning Home</p>
+            </div>
+          </div>
+
+          <div class="glass-panel-light p-3 rounded-xl border border-surface-border/60 flex items-center gap-2.5">
+            <div class="p-1.5 rounded-lg bg-purple-500/10 text-purple-400">
+              <i data-lucide="shield" class="w-4 h-4"></i>
+            </div>
+            <div class="text-left">
+              <p class="text-xs font-bold text-white">Total Sovereignty</p>
+              <p class="text-[10px] text-slate-400">Your Data, Your Keys</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- SPACIOUS TRANSITION & VALUE COMPARISON MATRIX -->
+      <div class="mt-20 md:mt-28">
+        
+        <div class="text-center max-w-2xl mx-auto mb-8 space-y-2">
+          <span class="text-xs font-mono uppercase tracking-widest text-brand-400 font-bold">Feature & Strategy Breakdown</span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Public Cloud vs. DIY Glue vs. SovereignStack</h2>
+        </div>
+
+        <div class="glass-panel rounded-2xl border border-surface-border overflow-x-auto shadow-2xl glow-cyan">
+        <table class="w-full text-left text-sm border-collapse min-w-[700px]">
+          <thead>
+            <tr class="border-b border-surface-border bg-surface-dark">
+              <th class="p-5 font-semibold text-slate-400 text-xs uppercase tracking-wider w-1/4">Key Capability / Vector</th>
+              <th class="p-5 font-semibold text-slate-400 text-xs uppercase tracking-wider w-1/4">Hyperscalers (AWS / GCP / Azure)</th>
+              <th class="p-5 font-semibold text-slate-400 text-xs uppercase tracking-wider w-1/4">DIY Fragile Multi-Tool Glue</th>
+              <th class="p-5 font-semibold text-brand-400 text-xs uppercase tracking-wider w-1/4 bg-brand-950/40 border-l border-r border-brand-500/30">
+                <div class="flex items-center gap-1.5 font-bold">
+                  <i data-lucide="shield-check" class="w-4 h-4 text-brand-400"></i>
+                  <span>SovereignStack</span>
+                </div>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-surface-border text-slate-300">
+            
+            <!-- Row 1: Cost & Egress -->
+            <tr class="hover:bg-surface-card/40 transition-colors">
+              <td class="p-5 font-semibold text-white">
+                <div>Cost Predictability & Egress</div>
+                <div class="text-xs text-slate-400 font-normal">Data egress taxes & seat licenses</div>
+              </td>
+              <td class="p-5 text-red-400">
+                <div class="font-medium flex items-center gap-1.5"><i data-lucide="x" class="w-4 h-4"></i> Unpredictable bills</div>
+                <div class="text-xs text-slate-400">$0.09/GB egress tax + per-user IAM charges</div>
+              </td>
+              <td class="p-5 text-amber-400">
+                <div class="font-medium flex items-center gap-1.5"><i data-lucide="alert-triangle" class="w-4 h-4"></i> High DevOps Labor</div>
+                <div class="text-xs text-slate-400">Months of maintenance & engineering overhead</div>
+              </td>
+              <td class="p-5 text-brand-300 bg-brand-950/30 border-l border-r border-brand-500/30 font-semibold">
+                <div class="flex items-center gap-1.5 text-emerald-400"><i data-lucide="check" class="w-4 h-4"></i> $0 Egress • 100% Fixed</div>
+                <div class="text-xs text-slate-300">Flat hardware or private VM costs with zero per-GB billing</div>
+              </td>
+            </tr>
+
+            <!-- Row 2: Data Sovereignty -->
+            <tr class="hover:bg-surface-card/40 transition-colors">
+              <td class="p-5 font-semibold text-white">
+                <div>Data & Legal Sovereignty</div>
+                <div class="text-xs text-slate-400 font-normal">Regulatory jurisdiction & privacy</div>
+              </td>
+              <td class="p-5 text-red-400">
+                <div class="font-medium flex items-center gap-1.5"><i data-lucide="x" class="w-4 h-4"></i> US Cloud Act Exposure</div>
+                <div class="text-xs text-slate-400">Subpoena risk & extraterritorial jurisdiction</div>
+              </td>
+              <td class="p-5 text-amber-400">
+                <div class="font-medium flex items-center gap-1.5"><i data-lucide="alert-triangle" class="w-4 h-4"></i> Complex Hardening</div>
+                <div class="text-xs text-slate-400">Manual policy enforcement and audit gaps</div>
+              </td>
+              <td class="p-5 text-brand-300 bg-brand-950/30 border-l border-r border-brand-500/30 font-semibold">
+                <div class="flex items-center gap-1.5 text-emerald-400"><i data-lucide="check" class="w-4 h-4"></i> 100% On-Premise</div>
+                <div class="text-xs text-slate-300">Full GDPR, NIS2, and DORA sovereignty by default</div>
+              </td>
+            </tr>
+
+            <!-- Row 3: Air-Gap Capability -->
+            <tr class="hover:bg-surface-card/40 transition-colors">
+              <td class="p-5 font-semibold text-white">
+                <div>Air-Gapped & Offline Ready</div>
+                <div class="text-xs text-slate-400 font-normal">Defense, banking & strict isolation</div>
+              </td>
+              <td class="p-5 text-red-400">
+                <div class="font-medium flex items-center gap-1.5"><i data-lucide="x" class="w-4 h-4"></i> Impossible / High Cost</div>
+                <div class="text-xs text-slate-400">Requires dedicated GovCloud / AWS Outposts ($$$)</div>
+              </td>
+              <td class="p-5 text-amber-400">
+                <div class="font-medium flex items-center gap-1.5"><i data-lucide="alert-triangle" class="w-4 h-4"></i> Tedious Setup</div>
+                <div class="text-xs text-slate-400">Manual mirrors and local CA certificate rotation</div>
+              </td>
+              <td class="p-5 text-brand-300 bg-brand-950/30 border-l border-r border-brand-500/30 font-semibold">
+                <div class="flex items-center gap-1.5 text-emerald-400"><i data-lucide="check" class="w-4 h-4"></i> Native Air-Gap Mode</div>
+                <div class="text-xs text-slate-300">Built-in local Root CA, offline bundle tarballs, zero WAN dependency</div>
+              </td>
+            </tr>
+
+            <!-- Row 4: Identity & Secrets -->
+            <tr class="hover:bg-surface-card/40 transition-colors">
+              <td class="p-5 font-semibold text-white">
+                <div>IAM & Zero-Trust Secrets</div>
+                <div class="text-xs text-slate-400 font-normal">SSO, SAML, Vault, dynamic credentials</div>
+              </td>
+              <td class="p-5 text-slate-400">
+                <div class="font-medium flex items-center gap-1.5"><i data-lucide="minus" class="w-4 h-4"></i> Proprietary IAM</div>
+                <div class="text-xs text-slate-400">AWS KMS / Secrets Manager (expensive per-secret rate)</div>
+              </td>
+              <td class="p-5 text-amber-400">
+                <div class="font-medium flex items-center gap-1.5"><i data-lucide="alert-triangle" class="w-4 h-4"></i> Disconnected Tools</div>
+                <div class="text-xs text-slate-400">Separate Keycloak & Vault with manual glue</div>
+              </td>
+              <td class="p-5 text-brand-300 bg-brand-950/30 border-l border-r border-brand-500/30 font-semibold">
+                <div class="flex items-center gap-1.5 text-emerald-400"><i data-lucide="check" class="w-4 h-4"></i> Keycloak + OpenBao</div>
+                <div class="text-xs text-slate-300">Pre-wired OIDC, PKCE, Shamir unseal, dynamic injection</div>
+              </td>
+            </tr>
+
+            <!-- Row 5: Time to Production -->
+            <tr class="hover:bg-surface-card/40 transition-colors">
+              <td class="p-5 font-semibold text-white">
+                <div>Time to Production</div>
+                <div class="text-xs text-slate-400 font-normal">From server setup to developer deploy</div>
+              </td>
+              <td class="p-5 text-slate-400">
+                <div class="font-medium">2 to 6 Weeks</div>
+                <div class="text-xs text-slate-400">Complex Terraform, VPC, IAM policies, NAT gateways</div>
+              </td>
+              <td class="p-5 text-red-400">
+                <div class="font-medium">3 to 6 Months</div>
+                <div class="text-xs text-slate-400">Endless debugging of custom Ansible & compose scripts</div>
+              </td>
+              <td class="p-5 text-brand-300 bg-brand-950/30 border-l border-r border-brand-500/30 font-semibold">
+                <div class="flex items-center gap-1.5 text-emerald-400"><i data-lucide="zap" class="w-4 h-4"></i> Turnkey Deployment</div>
+                <div class="text-xs text-slate-300">Automated preflight checks, systemd isolation, and health validation</div>
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+      </div>
+
+    </section>
+
+    <!-- 3. THE 6-TIER APPLIANCE ARCHITECTURE -->
+    <section id="architecture" class="py-20 md:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-surface-border/60">
+      
+      <div class="text-center max-w-3xl mx-auto space-y-4 mb-16">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-950/70 border border-blue-500/30 text-blue-300 text-xs font-mono font-medium">
+          <i data-lucide="layers" class="w-3.5 h-3.5"></i>
+          <span>Appliance Blueprint</span>
+        </div>
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight">
+          The 6 Enterprise Architecture Tiers
+        </h2>
+        <p class="text-base sm:text-lg text-slate-300">
+          Everything your engineering team needs — packaged as a hardened, turnkey software appliance running directly on bare-metal or private hypervisors.
+        </p>
+      </div>
+
+      <!-- 6 Tiers Interactive Explorer Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- Tier 1 -->
+        <div class="glass-panel p-6 rounded-2xl border border-surface-border hover:border-brand-500/50 hover:bg-surface-card transition-all duration-300 group">
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-10 h-10 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-400 group-hover:scale-110 transition-transform">
+              <i data-lucide="server" class="w-5 h-5"></i>
+            </div>
+            <span class="text-xs font-mono px-2 py-0.5 rounded bg-surface-darkest text-slate-400 border border-surface-border font-bold">TIER 1</span>
+          </div>
+          <h3 class="text-lg font-bold text-white group-hover:text-brand-300 transition-colors">
+            Hardened Container Foundation
+          </h3>
+          <p class="text-sm text-slate-400 mt-2 leading-relaxed">
+            Locked-down host OS with kernel sysctl hardening, rootless container namespaces, dedicated bridge firewalls, and built-in local PKI CA authority.
+          </p>
+          <div class="mt-4 pt-4 border-t border-surface-border/60 text-xs font-mono text-slate-400 space-y-1.5">
+            <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-brand-400"></i> Linux Kernel 6.x + AppArmor/SELinux</div>
+            <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-brand-400"></i> Internal mTLS & Isolated Subnets</div>
+          </div>
+        </div>
+
+        <!-- Tier 2 -->
+        <div class="glass-panel p-6 rounded-2xl border border-surface-border hover:border-brand-500/50 hover:bg-surface-card transition-all duration-300 group">
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 group-hover:scale-110 transition-transform">
+              <i data-lucide="rocket" class="w-5 h-5"></i>
+            </div>
+            <span class="text-xs font-mono px-2 py-0.5 rounded bg-surface-darkest text-slate-400 border border-surface-border font-bold">TIER 2</span>
+          </div>
+          <h3 class="text-lg font-bold text-white group-hover:text-brand-300 transition-colors">
+            Native PaaS & Deployment Engine
+          </h3>
+          <p class="text-sm text-slate-400 mt-2 leading-relaxed">
+            Our purpose-built deployment runtime. Instant Git push builds, ephemeral pull-request environments, health probing, and zero-downtime rolling upgrades.
+          </p>
+          <div class="mt-4 pt-4 border-t border-surface-border/60 text-xs font-mono text-slate-400 space-y-1.5">
+            <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-brand-400"></i> Custom Orchestration & Auto-Rollback</div>
+            <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-brand-400"></i> Automated SSL / Internal Local CA</div>
+          </div>
+        </div>
+
+        <!-- Tier 3 -->
+        <div class="glass-panel p-6 rounded-2xl border border-surface-border hover:border-brand-500/50 hover:bg-surface-card transition-all duration-300 group">
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-10 h-10 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-400 group-hover:scale-110 transition-transform">
+              <i data-lucide="shield" class="w-5 h-5"></i>
+            </div>
+            <span class="text-xs font-mono px-2 py-0.5 rounded bg-surface-darkest text-slate-400 border border-surface-border font-bold">TIER 3</span>
+          </div>
+          <h3 class="text-lg font-bold text-white group-hover:text-brand-300 transition-colors">
+            Enterprise IAM & SSO (Keycloak)
+          </h3>
+          <p class="text-sm text-slate-400 mt-2 leading-relaxed">
+            Full enterprise identity federation. OIDC with PKCE, SAML 2.0, WebAuthn hardware security keys, and bi-directional sync with Active Directory / LDAP.
+          </p>
+          <div class="mt-4 pt-4 border-t border-surface-border/60 text-xs font-mono text-slate-400 space-y-1.5">
+            <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-brand-400"></i> Granular RBAC & Team Workspaces</div>
+            <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-brand-400"></i> FIDO2 / YubiKey MFA Mandatory Gate</div>
+          </div>
+        </div>
+
+        <!-- Tier 4 -->
+        <div class="glass-panel p-6 rounded-2xl border border-surface-border hover:border-brand-500/50 hover:bg-surface-card transition-all duration-300 group">
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 group-hover:scale-110 transition-transform">
+              <i data-lucide="key" class="w-5 h-5"></i>
+            </div>
+            <span class="text-xs font-mono px-2 py-0.5 rounded bg-surface-darkest text-slate-400 border border-surface-border font-bold">TIER 4</span>
+          </div>
+          <h3 class="text-lg font-bold text-white group-hover:text-brand-300 transition-colors">
+            Zero-Trust Secrets Store (OpenBao)
+          </h3>
+          <p class="text-sm text-slate-400 mt-2 leading-relaxed">
+            Community-driven open-source Vault engine. Shamir's secret sharing threshold unsealing, envelope transit encryption, and dynamic database credential rotation.
+          </p>
+          <div class="mt-4 pt-4 border-t border-surface-border/60 text-xs font-mono text-slate-400 space-y-1.5">
+            <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-brand-400"></i> Zero plain-text secrets in Git or disk</div>
+            <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-brand-400"></i> HashiCorp Vault API 100% Compatible</div>
+          </div>
+        </div>
+
+        <!-- Tier 5 -->
+        <div class="glass-panel p-6 rounded-2xl border border-surface-border hover:border-brand-500/50 hover:bg-surface-card transition-all duration-300 group">
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
+              <i data-lucide="shield-alert" class="w-5 h-5"></i>
+            </div>
+            <span class="text-xs font-mono px-2 py-0.5 rounded bg-surface-darkest text-slate-400 border border-surface-border font-bold">TIER 5</span>
+          </div>
+          <h3 class="text-lg font-bold text-white group-hover:text-brand-300 transition-colors">
+            Scanned OCI Registry (Harbor + Trivy)
+          </h3>
+          <p class="text-sm text-slate-400 mt-2 leading-relaxed">
+            Enterprise container artifact registry with automated vulnerability scanning, immutable tags, and strict CVE admission control policies.
+          </p>
+          <div class="mt-4 pt-4 border-t border-surface-border/60 text-xs font-mono text-slate-400 space-y-1.5">
+            <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-brand-400"></i> Trivy Zero-Day Vulnerability Scanning</div>
+            <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-brand-400"></i> Automatic SBOM (CycloneDX / SPDX)</div>
+          </div>
+        </div>
+
+        <!-- Tier 6 -->
+        <div class="glass-panel p-6 rounded-2xl border border-surface-border hover:border-brand-500/50 hover:bg-surface-card transition-all duration-300 group">
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
+              <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+            </div>
+            <span class="text-xs font-mono px-2 py-0.5 rounded bg-surface-darkest text-slate-400 border border-surface-border font-bold">TIER 6</span>
+          </div>
+          <h3 class="text-lg font-bold text-white group-hover:text-brand-300 transition-colors">
+            Self-Service Catalog & Telemetry
+          </h3>
+          <p class="text-sm text-slate-400 mt-2 leading-relaxed">
+            1-click service catalog for databases (PostgreSQL, Redis, ClickHouse, MinIO), unified logging, Prometheus metrics, and automated immutable audit trails.
+          </p>
+          <div class="mt-4 pt-4 border-t border-surface-border/60 text-xs font-mono text-slate-400 space-y-1.5">
+            <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-brand-400"></i> 1-Click Database & Storage Templates</div>
+            <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-brand-400"></i> Prometheus & Grafana Metrics Included</div>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- 4. AUTOMATED SECURITY SUPPLY CHAIN (Interactive Pipeline Simulator) -->
+    <section id="supply-chain" class="py-20 md:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-surface-border/60">
+      
+      <div class="text-center max-w-3xl mx-auto space-y-4 mb-16">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/70 border border-emerald-500/30 text-emerald-300 text-xs font-mono font-medium">
+          <i data-lucide="shield-alert" class="w-3.5 h-3.5"></i>
+          <span>Automated Security Supply Chain</span>
+        </div>
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight">
+          Zero-Trust Deployment Pipeline
+        </h2>
+        <p class="text-base sm:text-lg text-slate-300">
+          Every container image is mirrored, vulnerability-scanned via Trivy, injected with ephemeral OpenBao credentials, and executed in an isolated network sandbox.
+        </p>
+      </div>
+
+      <!-- Interactive 5-Step Pipeline Flow -->
+      <div class="space-y-8">
+        
+        <!-- Step Navigation Pill Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-5 gap-3">
+          
+          <!-- Step 1 -->
+          <button onclick="setPipelineStep(1)" id="pipelineBtn1" class="pipeline-step-btn text-left p-4 rounded-xl border border-brand-500 bg-brand-950/40 text-white transition-all shadow-lg shadow-brand-500/10">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-mono text-brand-400 font-bold">STAGE 01</span>
+              <i data-lucide="download-cloud" class="w-4 h-4 text-brand-400"></i>
+            </div>
+            <h4 class="text-sm font-bold">Catalog Pull</h4>
+            <p class="text-[11px] text-slate-400 mt-1">Git push or verified template</p>
+          </button>
+
+          <!-- Step 2 -->
+          <button onclick="setPipelineStep(2)" id="pipelineBtn2" class="pipeline-step-btn text-left p-4 rounded-xl border border-surface-border bg-surface-card hover:border-slate-500 text-slate-300 transition-all">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-mono text-slate-400 font-bold">STAGE 02</span>
+              <i data-lucide="copy-check" class="w-4 h-4 text-slate-400"></i>
+            </div>
+            <h4 class="text-sm font-bold">Harbor Mirror</h4>
+            <p class="text-[11px] text-slate-400 mt-1">Private registry caching</p>
+          </button>
+
+          <!-- Step 3 -->
+          <button onclick="setPipelineStep(3)" id="pipelineBtn3" class="pipeline-step-btn text-left p-4 rounded-xl border border-surface-border bg-surface-card hover:border-slate-500 text-slate-300 transition-all">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-mono text-slate-400 font-bold">STAGE 03</span>
+              <i data-lucide="shield-check" class="w-4 h-4 text-slate-400"></i>
+            </div>
+            <h4 class="text-sm font-bold">Trivy CVE Gate</h4>
+            <p class="text-[11px] text-slate-400 mt-1">Block High & Critical</p>
+          </button>
+
+          <!-- Step 4 -->
+          <button onclick="setPipelineStep(4)" id="pipelineBtn4" class="pipeline-step-btn text-left p-4 rounded-xl border border-surface-border bg-surface-card hover:border-slate-500 text-slate-300 transition-all">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-mono text-slate-400 font-bold">STAGE 04</span>
+              <i data-lucide="key-round" class="w-4 h-4 text-slate-400"></i>
+            </div>
+            <h4 class="text-sm font-bold">OpenBao Injection</h4>
+            <p class="text-[11px] text-slate-400 mt-1">Ephemeral secret transit</p>
+          </button>
+
+          <!-- Step 5 -->
+          <button onclick="setPipelineStep(5)" id="pipelineBtn5" class="pipeline-step-btn text-left p-4 rounded-xl border border-surface-border bg-surface-card hover:border-slate-500 text-slate-300 transition-all">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-mono text-slate-400 font-bold">STAGE 05</span>
+              <i data-lucide="box" class="w-4 h-4 text-slate-400"></i>
+            </div>
+            <h4 class="text-sm font-bold">Isolated Run</h4>
+            <p class="text-[11px] text-slate-400 mt-1">Non-root bridge mTLS</p>
+          </button>
+
+        </div>
+
+        <!-- Interactive Pipeline Detail Window -->
+        <div class="glass-panel p-6 sm:p-8 rounded-2xl border border-surface-border shadow-2xl">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            
+            <!-- Left Info Panel -->
+            <div class="lg:col-span-5 space-y-4">
+              <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-brand-500/10 text-brand-300 font-mono text-xs font-semibold" id="pipelineStageTag">
+                STAGE 01: CATALOG PULL & REPO VERIFICATION
+              </div>
+              <h3 class="text-2xl font-bold text-white" id="pipelineStageTitle">
+                Cryptographic Artifact Pull & Signature Validation
+              </h3>
+              <p class="text-sm text-slate-300 leading-relaxed" id="pipelineStageDesc">
+                Developers select applications from the curated Sovereign Service Catalog or trigger automated Git webhooks. Every manifest is cryptographically checked against internal trust signatures before any deployment pipeline begins.
+              </p>
+
+              <!-- Technical Highlights -->
+              <div class="space-y-2 pt-2" id="pipelineStagePoints">
+                <div class="flex items-start gap-2 text-xs text-slate-300">
+                  <i data-lucide="check" class="w-4 h-4 text-emerald-400 shrink-0 mt-0.5"></i>
+                  <span>Zero unauthorized third-party registry pulls allowed.</span>
+                </div>
+                <div class="flex items-start gap-2 text-xs text-slate-300">
+                  <i data-lucide="check" class="w-4 h-4 text-emerald-400 shrink-0 mt-0.5"></i>
+                  <span>Strict commit hash pinning with OIDC developer attestation.</span>
+                </div>
+              </div>
+
+              <!-- Automated Step Navigation Controller -->
+              <div class="flex items-center gap-3 pt-4">
+                <button onclick="prevPipelineStep()" class="px-3.5 py-1.5 rounded-lg bg-surface-card border border-surface-border hover:border-slate-500 text-xs font-mono text-slate-300 hover:text-white flex items-center gap-1.5">
+                  <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i> Prev
+                </button>
+                <button onclick="nextPipelineStep()" class="px-3.5 py-1.5 rounded-lg bg-brand-500/20 border border-brand-500/40 hover:bg-brand-500/30 text-xs font-mono text-brand-300 font-semibold flex items-center gap-1.5">
+                  Next Stage <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+                </button>
+                <span class="text-xs font-mono text-slate-500 ml-auto" id="pipelineStepCounter">Step 1 of 5</span>
+              </div>
+            </div>
+
+            <!-- Right Terminal / Code Visualizer -->
+            <div class="lg:col-span-7">
+              <div class="bg-surface-darkest rounded-xl border border-surface-border p-4 shadow-inner">
+                <div class="flex items-center justify-between pb-3 border-b border-surface-border font-mono text-xs text-slate-400">
+                  <span class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-brand-400 animate-pulse"></span>
+                    <span id="pipelineTerminalTitle">pipeline-engine: stage-01.log</span>
+                  </span>
+                  <span class="text-slate-500">live-stream</span>
+                </div>
+                <pre id="pipelineTerminalContent" class="mt-3 font-mono text-xs text-slate-300 overflow-x-auto terminal-scrollbar leading-relaxed">
+[2026-11-09T16:25:01Z] INGRESS: Developer git push detected (branch: main, commit: 7e2f1a9)
+[2026-11-09T16:25:01Z] AUTH: Keycloak OIDC validated developer identity: 'elena.s@sovereign.local'
+[2026-11-09T16:25:02Z] CATALOG: Resolving OCI Base Image 'node:22-alpine3.20'
+[2026-11-09T16:25:02Z] SIGNATURE: Cosign ECDSA public key verified against internal trust root
+[2026-11-09T16:25:03Z] STATUS: Artifact manifest registered. Ready for Harbor private mirror. ✓
+                </pre>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- 5. COMPLIANCE & REGULATED SECTORS -->
+    <section id="compliance" class="py-20 md:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-surface-border/60">
+      
+      <div class="text-center max-w-3xl mx-auto space-y-4 mb-16">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-950/70 border border-purple-500/30 text-purple-300 text-xs font-mono font-medium">
+          <i data-lucide="scale" class="w-3.5 h-3.5"></i>
+          <span>Regulatory Compliance</span>
+        </div>
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight">
+          Engineered for Strictly Regulated Environments
+        </h2>
+        <p class="text-base sm:text-lg text-slate-300">
+          Meet stringent European and international digital sovereignty mandates with zero compromise on developer productivity.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <!-- Compliance Card 1: GDPR -->
+        <div class="glass-panel p-6 rounded-2xl border border-surface-border hover:border-purple-500/40 transition-all">
+          <div class="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 mb-4">
+            <i data-lucide="shield-check" class="w-5 h-5"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white">GDPR & Schrems II Immune</h3>
+          <p class="text-sm text-slate-300 mt-2 leading-relaxed">
+            Eliminates foreign third-party cloud data processing risks. Customer data, encryption keys, and container registries remain 100% inside your sovereign perimeter.
+          </p>
+          <ul class="mt-4 space-y-2 text-xs text-slate-400">
+            <li class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-purple-400"></i> Zero US Cloud Act extraterritorial reach</li>
+            <li class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-purple-400"></i> Local cryptographic key management</li>
+          </ul>
+        </div>
+
+        <!-- Compliance Card 2: NIS2 Directive -->
+        <div class="glass-panel p-6 rounded-2xl border border-surface-border hover:border-brand-500/40 transition-all">
+          <div class="w-10 h-10 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-400 mb-4">
+            <i data-lucide="file-check-2" class="w-5 h-5"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white">EU NIS2 Directive Ready</h3>
+          <p class="text-sm text-slate-300 mt-2 leading-relaxed">
+            Automated supply chain security auditing, Trivy CVE vulnerability admission gates, and immutable audit logs satisfy NIS2 critical entity cybersecurity obligations.
+          </p>
+          <ul class="mt-4 space-y-2 text-xs text-slate-400">
+            <li class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-brand-400"></i> Automated SBOM generation (SPDX/CycloneDX)</li>
+            <li class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-brand-400"></i> Incident logging and tamper-proof trails</li>
+          </ul>
+        </div>
+
+        <!-- Compliance Card 3: DORA -->
+        <div class="glass-panel p-6 rounded-2xl border border-surface-border hover:border-blue-500/40 transition-all">
+          <div class="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 mb-4">
+            <i data-lucide="landmark" class="w-5 h-5"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white">DORA Financial Framework</h3>
+          <p class="text-sm text-slate-300 mt-2 leading-relaxed">
+            For banks, fintechs, and insurance institutions. Mitigates ICT concentration risk away from the Big Three hyperscalers with air-gappable operational resilience.
+          </p>
+          <ul class="mt-4 space-y-2 text-xs text-slate-400">
+            <li class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-blue-400"></i> Multi-datacenter high availability</li>
+            <li class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-blue-400"></i> Instant offline disaster recovery mode</li>
+          </ul>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- 6. ENTERPRISE FAQ SECTION -->
+    <section id="faq" class="py-20 md:py-28 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto border-t border-surface-border/60">
+      
+      <div class="text-center space-y-4 mb-16">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-slate-300 text-xs font-mono font-medium">
+          <i data-lucide="help-circle" class="w-3.5 h-3.5"></i>
+          <span>Frequently Asked Questions</span>
+        </div>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+          Everything Enterprise IT Leaders Ask
+        </h2>
+        <p class="text-base text-slate-300">
+          Technical specifications, architecture details, and enterprise operations.
+        </p>
+      </div>
+
+      <!-- FAQ Accordions -->
+      <div class="space-y-4">
+        
+        <!-- FAQ Item 1 -->
+        <div class="glass-panel rounded-xl border border-surface-border overflow-hidden transition-all">
+          <button onclick="toggleFaq(1)" class="w-full p-5 text-left font-bold text-base text-white flex items-center justify-between gap-4 hover:text-brand-300 transition-colors">
+            <span>Can SovereignStack run in fully air-gapped / offline environments?</span>
+            <i data-lucide="chevron-down" id="faqIcon1" class="w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200"></i>
+          </button>
+          <div id="faqContent1" class="hidden px-5 pb-5 text-sm text-slate-300 leading-relaxed border-t border-surface-border/40 pt-3">
+            Yes, absolutely. SovereignStack ships with an offline bundle tarball that contains all container images, package dependencies, and a standalone local Root Certificate Authority (CA) with automatic ECDSA P-384 certificate generation. Once deployed, it requires zero internet connectivity and performs all CVE scanning and secret storage strictly within your local network boundary.
+          </div>
+        </div>
+
+        <!-- FAQ Item 2 -->
+        <div class="glass-panel rounded-xl border border-surface-border overflow-hidden transition-all">
+          <button onclick="toggleFaq(2)" class="w-full p-5 text-left font-bold text-base text-white flex items-center justify-between gap-4 hover:text-brand-300 transition-colors">
+            <span>What operating systems and hypervisors are supported?</span>
+            <i data-lucide="chevron-down" id="faqIcon2" class="w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200"></i>
+          </button>
+          <div id="faqContent2" class="hidden px-5 pb-5 text-sm text-slate-300 leading-relaxed border-t border-surface-border/40 pt-3">
+            SovereignStack is tested and supported on bare-metal hardware and all major enterprise virtualization platforms:
+            <ul class="list-disc list-inside mt-2 space-y-1 text-slate-300">
+              <li><strong class="text-white">Supported Linux Distros:</strong> Ubuntu Server (22.04 / 24.04 LTS), Debian 12 (Bookworm), Rocky Linux 9, AlmaLinux 9, and Red Hat Enterprise Linux (RHEL) 9.</li>
+              <li><strong class="text-white">Hypervisors:</strong> VMware ESXi / vSphere, Proxmox VE, KVM / QEMU, OpenStack, Nutanix AHV, and bare-metal servers (Dell PowerEdge, HPE ProLiant, Supermicro).</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- FAQ Item 3 -->
+        <div class="glass-panel rounded-xl border border-surface-border overflow-hidden transition-all">
+          <button onclick="toggleFaq(3)" class="w-full p-5 text-left font-bold text-base text-white flex items-center justify-between gap-4 hover:text-brand-300 transition-colors">
+            <span>How are secrets managed and protected under the hood?</span>
+            <i data-lucide="chevron-down" id="faqIcon3" class="w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200"></i>
+          </button>
+          <div id="faqContent3" class="hidden px-5 pb-5 text-sm text-slate-300 leading-relaxed border-t border-surface-border/40 pt-3">
+            Secrets are managed by <strong>OpenBao</strong> (the open-source, Linux Foundation-governed fork of HashiCorp Vault). The master encryption key is split using Shamir's Secret Sharing (configurable e.g. 3-of-5 key holders). All secrets are encrypted in transit and at rest using AES-256-GCM envelope encryption with <code class="text-brand-300 font-mono text-xs">mlock</code> memory pinning to prevent swap file leaks.
+          </div>
+        </div>
+
+        <!-- FAQ Item 4 -->
+        <div class="glass-panel rounded-xl border border-surface-border overflow-hidden transition-all">
+          <button onclick="toggleFaq(4)" class="w-full p-5 text-left font-bold text-base text-white flex items-center justify-between gap-4 hover:text-brand-300 transition-colors">
+            <span>How does lifecycle management, updates, and backups work?</span>
+            <i data-lucide="chevron-down" id="faqIcon4" class="w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200"></i>
+          </button>
+          <div id="faqContent4" class="hidden px-5 pb-5 text-sm text-slate-300 leading-relaxed border-t border-surface-border/40 pt-3">
+            SovereignStack features atomic updates and automated rollbacks via the native deployment engine. The appliance CLI performs health probe verification before switching traffic. Integrated automated backup scripts take scheduled ZFS snapshots and encrypted backups of Keycloak DB, OpenBao raft storage, and Harbor catalogs with direct export to S3-compatible endpoints (MinIO/Ceph/TrueNAS) or local tape/SAN.
+          </div>
+        </div>
+
+        <!-- FAQ Item 5 -->
+        <div class="glass-panel rounded-xl border border-surface-border overflow-hidden transition-all">
+          <button onclick="toggleFaq(5)" class="w-full p-5 text-left font-bold text-base text-white flex items-center justify-between gap-4 hover:text-brand-300 transition-colors">
+            <span>What happens in our 30-minute Architecture Meeting?</span>
+            <i data-lucide="chevron-down" id="faqIcon5" class="w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200"></i>
+          </button>
+          <div id="faqContent5" class="hidden px-5 pb-5 text-sm text-slate-300 leading-relaxed border-t border-surface-border/40 pt-3">
+            In our 30-minute architecture meeting, we review your current cloud footprint, air-gapped / security requirements, and server topology (bare-metal, VMware, Proxmox, or sovereign cloud). You'll see a live interactive demonstration of the native deployment engine, Trivy CVE gate, and OpenBao secret injection tailored to your stack.
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- 7. CLOSING CONSULTATION BANNER -->
+    <section class="py-20 md:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-surface-border/60">
+      
+      <div class="glass-panel p-8 sm:p-14 rounded-3xl border border-brand-500/30 shadow-2xl relative overflow-hidden glow-cyan text-center max-w-4xl mx-auto">
+        
+        <div class="space-y-6">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-950/80 border border-brand-500/40 text-brand-300 text-xs font-mono font-medium mx-auto">
+            <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+            <span>Schedule Direct 1-on-1 Consultation</span>
+          </div>
+
+          <h2 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight">
+            Take Back Control of Your Infrastructure Today.
+          </h2>
+
+          <p class="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto">
+            Discover how SovereignStack replaces runaway cloud fees and proprietary API lock-in with a dedicated, zero-trust private cloud appliance.
+          </p>
+
+          <div class="pt-4 flex justify-center">
+            <button onclick="openMeetingModal()" class="w-full sm:w-auto px-10 py-4 text-base font-bold text-slate-950 bg-gradient-to-r from-brand-400 via-cyan-300 to-blue-400 rounded-xl shadow-2xl hover:shadow-brand-400/50 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2.5">
+              <i data-lucide="calendar" class="w-5 h-5 text-slate-950"></i>
+              <span>Book architecture meeting (30min)</span>
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-surface-border bg-surface-dark py-12 px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+      
+      <!-- Col 1: Brand Info -->
+      <div class="md:col-span-2 space-y-4">
+        <a href="#" class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-400 to-blue-600 p-[1px] shadow-md">
+            <div class="w-full h-full bg-surface-darkest rounded-[7px] flex items-center justify-center">
+              <i data-lucide="shield-check" class="w-4 h-4 text-brand-400"></i>
+            </div>
+          </div>
+          <span class="font-bold text-lg text-white">Sovereign<span class="text-brand-400 font-mono">Stack</span></span>
+        </a>
+        <p class="text-xs text-slate-400 max-w-sm leading-relaxed">
+          The sovereign on-premise private cloud appliance. Bringing developer agility, zero-trust secrets, and enterprise IAM back under your control.
+        </p>
+        <p class="text-[11px] font-mono text-slate-500">
+          Built with Keycloak, OpenBao, Harbor, and SovereignStack Deployment Engine.
+        </p>
+      </div>
+
+      <!-- Col 2: Platform -->
+      <div class="space-y-3 text-xs">
+        <h4 class="font-bold text-white uppercase tracking-wider font-mono">Platform Tiers</h4>
+        <ul class="space-y-2 text-slate-400">
+          <li><a href="#architecture" class="hover:text-brand-300 transition-colors">Hardened Host Foundation</a></li>
+          <li><a href="#architecture" class="hover:text-brand-300 transition-colors">Native Deployment Engine</a></li>
+          <li><a href="#architecture" class="hover:text-brand-300 transition-colors">Keycloak IAM & SSO</a></li>
+          <li><a href="#architecture" class="hover:text-brand-300 transition-colors">OpenBao Vault Secrets</a></li>
+          <li><a href="#architecture" class="hover:text-brand-300 transition-colors">Harbor + Trivy Registry</a></li>
+        </ul>
+      </div>
+
+      <!-- Col 3: Solutions -->
+      <div class="space-y-3 text-xs">
+        <h4 class="font-bold text-white uppercase tracking-wider font-mono">Connect & Compliance</h4>
+        <ul class="space-y-2 text-slate-400">
+          <li><a href="#compliance" class="hover:text-brand-300 transition-colors">GDPR / Schrems II</a></li>
+          <li><a href="#compliance" class="hover:text-brand-300 transition-colors">NIS2 Cybersecurity</a></li>
+          <li><a href="#compliance" class="hover:text-brand-300 transition-colors">DORA Financial Risk</a></li>
+          <li><a href="#compliance" class="hover:text-brand-300 transition-colors">Air-Gapped & Offline</a></li>
+          <li><a href="javascript:void(0)" onclick="openMeetingModal()" class="hover:text-brand-300 font-medium text-brand-400 transition-colors">Book architecture meeting (30min)</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- Bottom line -->
+    <div class="max-w-7xl mx-auto mt-10 pt-6 border-t border-surface-border/50 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+      <div>
+        © 2026 SovereignStack Project. All rights reserved.
+      </div>
+      <div class="flex items-center gap-6">
+        <a href="#" class="hover:text-slate-300">Privacy Policy</a>
+        <a href="#" class="hover:text-slate-300">Terms of Service</a>
+        <a href="#" class="hover:text-slate-300">Security Architecture</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- INTERACTIVE ARCHITECTURE MEETING MODAL (30 MIN) -->
+  <div id="meetingModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="glass-panel max-w-lg w-full rounded-2xl border border-surface-border shadow-2xl p-6 sm:p-8 space-y-6 relative animate-in fade-in duration-200">
+      
+      <button onclick="closeMeetingModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white p-1 rounded-lg hover:bg-surface-card" aria-label="Close modal">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="space-y-1">
+        <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-brand-500/10 text-brand-300 font-mono text-[11px] font-bold">
+          <i data-lucide="calendar" class="w-3 h-3"></i>
+          <span>30-MINUTE TECHNICAL ARCHITECTURE MEETING</span>
+        </div>
+        <h3 class="text-xl sm:text-2xl font-bold text-white">Book Architecture Meeting (30min)</h3>
+        <p class="text-xs text-slate-400">
+          Direct 1-on-1 technical session. We'll explore your private cloud architecture, deployment engine fit, air-gapped readiness, and custom sizing.
+        </p>
+      </div>
+
+      <form id="meetingForm" onsubmit="submitMeetingForm(event)" class="space-y-4 text-xs font-mono">
+        <div>
+          <label class="block text-slate-300 mb-1 font-sans font-medium">Work Email <span class="text-brand-400">*</span></label>
+          <input type="email" name="email" required placeholder="name@company.com" class="w-full px-3.5 py-2.5 rounded-lg bg-surface-darkest border border-surface-border focus:border-brand-400 focus:outline-none text-white text-xs">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-300 mb-1 font-sans font-medium">Full Name <span class="text-brand-400">*</span></label>
+            <input type="text" name="name" required placeholder="Elena Vance" class="w-full px-3.5 py-2.5 rounded-lg bg-surface-darkest border border-surface-border focus:border-brand-400 focus:outline-none text-white text-xs">
+          </div>
+          <div>
+            <label class="block text-slate-300 mb-1 font-sans font-medium">Your Role</label>
+            <select name="role" class="w-full px-3.5 py-2.5 rounded-lg bg-surface-darkest border border-surface-border focus:border-brand-400 focus:outline-none text-slate-300 text-xs">
+              <option value="CTO / VP Engineering">CTO / VP Engineering</option>
+              <option value="Lead Platform Architect">Lead Platform Architect</option>
+              <option value="DevOps / Infrastructure">DevOps / Infrastructure</option>
+              <option value="CISO / Security Leader">CISO / Security Leader</option>
+              <option value="Public Sector IT Director">Public Sector IT Director</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-slate-300 mb-1 font-sans font-medium">Primary Infrastructure Target</label>
+          <select name="target_infrastructure" class="w-full px-3.5 py-2.5 rounded-lg bg-surface-darkest border border-surface-border focus:border-brand-400 focus:outline-none text-slate-300 text-xs">
+            <option value="Bare-Metal On-Premise Data Center">Bare-Metal On-Premise Data Center</option>
+            <option value="Private Cloud (VMware ESXi / Proxmox / KVM)">Private Cloud (VMware ESXi / Proxmox / KVM)</option>
+            <option value="EU Sovereign Cloud (Hetzner / OVHcloud / Scaleway)">EU Sovereign Cloud (Hetzner / OVHcloud / Scaleway)</option>
+            <option value="Air-Gapped / Isolated Classified Network">Air-Gapped / Isolated Classified Network</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-slate-300 mb-1 font-sans font-medium">Key Focus Topics (Optional)</label>
+          <input type="text" name="focus_topics" placeholder="e.g. Migration from AWS, Air-Gap, GDPR/NIS2, Secrets injection" class="w-full px-3.5 py-2.5 rounded-lg bg-surface-darkest border border-surface-border focus:border-brand-400 focus:outline-none text-white text-xs">
+        </div>
+
+        <button type="submit" id="meetingSubmitBtn" class="w-full py-3.5 text-sm font-bold text-slate-950 bg-gradient-to-r from-brand-400 to-blue-400 rounded-xl shadow-lg hover:shadow-brand-400/30 transition-all flex items-center justify-center gap-2">
+          <i data-lucide="check" class="w-4 h-4"></i>
+          <span id="submitBtnText">Schedule 30-Min Architecture Meeting</span>
+        </button>
+
+        <div id="formErrorMessage" class="hidden text-xs text-red-400 text-center font-sans mt-2"></div>
+      </form>
+
+      <!-- Confirmation state (hidden initially) -->
+      <div id="meetingSuccessState" class="hidden text-center py-6 space-y-3">
+        <div class="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 mx-auto flex items-center justify-center">
+          <i data-lucide="check" class="w-6 h-6"></i>
+        </div>
+        <h4 class="text-lg font-bold text-white">Architecture Meeting Requested!</h4>
+        <p class="text-xs text-slate-300">
+          We'll confirm the 30-minute calendar invite and send tailored architecture materials within 2 hours.
+        </p>
+        <button onclick="closeMeetingModal()" class="px-4 py-2 rounded-lg bg-surface-card border border-surface-border text-xs text-white">
+          Close
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CLIENT-SIDE LOGIC & INTERACTIVITY -->
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // 1. Mobile Menu Toggle
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobileMenu');
+      menu.classList.toggle('hidden');
+    }
+
+    // 2. Hero Visual Window Tab Switcher
+    function switchHeroTab(tabName) {
+      const viewDashboard = document.getElementById('heroViewDashboard');
+      const viewTrivy = document.getElementById('heroViewTrivy');
+
+      const btnDashboard = document.getElementById('tabBtnDashboard');
+      const btnTrivy = document.getElementById('tabBtnTrivy');
+
+      viewDashboard.classList.add('hidden');
+      viewTrivy.classList.add('hidden');
+
+      [btnDashboard, btnTrivy].forEach(btn => {
+        btn.className = "px-3 py-1 rounded-md text-slate-400 hover:text-white transition-all flex items-center gap-1.5";
+      });
+
+      if (tabName === 'dashboard') {
+        viewDashboard.classList.remove('hidden');
+        btnDashboard.className = "px-3 py-1 rounded-md text-white bg-brand-500/20 text-brand-300 font-semibold transition-all flex items-center gap-1.5";
+      } else if (tabName === 'trivy') {
+        viewTrivy.classList.remove('hidden');
+        btnTrivy.className = "px-3 py-1 rounded-md text-white bg-brand-500/20 text-brand-300 font-semibold transition-all flex items-center gap-1.5";
+      }
+      lucide.createIcons();
+    }
+
+    // 3. Interactive Pipeline Simulator Logic
+    const pipelineData = {
+      1: {
+        tag: "STAGE 01: CATALOG PULL & REPO VERIFICATION",
+        title: "Cryptographic Artifact Pull & Signature Validation",
+        desc: "Developers select applications from the curated Sovereign Service Catalog or trigger automated Git webhooks. Every manifest is cryptographically checked against internal trust signatures before any deployment pipeline begins.",
+        points: [
+          "Zero unauthorized third-party registry pulls allowed.",
+          "Strict commit hash pinning with OIDC developer attestation."
+        ],
+        terminalTitle: "pipeline-engine: stage-01.log",
+        terminalLog: `[2026-11-09T16:25:01Z] INGRESS: Developer git push detected (branch: main, commit: 7e2f1a9)
+[2026-11-09T16:25:01Z] AUTH: Keycloak OIDC validated developer identity: 'elena.s@sovereign.local'
+[2026-11-09T16:25:02Z] CATALOG: Resolving OCI Base Image 'node:22-alpine3.20'
+[2026-11-09T16:25:02Z] SIGNATURE: Cosign ECDSA public key verified against internal trust root
+[2026-11-09T16:25:03Z] STATUS: Artifact manifest registered. Ready for Harbor private mirror. ✓`
+      },
+      2: {
+        tag: "STAGE 02: PRIVATE HARBOR REGISTRY MIRRORING",
+        title: "Immutable OCI Caching & Air-Gap Staging",
+        desc: "Container layers are pulled directly into the private, air-gappable Harbor OCI registry. Images are re-tagged, hashed with SHA-256, and marked immutable to prevent upstream tampering or supply-chain poisoning.",
+        points: [
+          "Air-gapped artifact storage with zero egress bandwidth consumption.",
+          "Automatic SHA-256 layer replication and multi-datacenter sync."
+        ],
+        terminalTitle: "harbor-registry: mirror-sync.log",
+        terminalLog: `[2026-11-09T16:25:04Z] HARBOR: Receiving OCI manifest for 'registry.local/production/core-api:v2.1'
+[2026-11-09T16:25:05Z] CACHE: Layer 1/4 (alpine-base) cached in local ZFS pool (3.2 MB)
+[2026-11-09T16:25:06Z] CACHE: Layer 2/4 (nodejs-runtime) verified SHA256: 41b8a9...c3
+[2026-11-09T16:25:07Z] POLICY: Tag immutability enforced. Rewrite blocked.
+[2026-11-09T16:25:07Z] HARBOR: Triggering Trivy static vulnerability scan webhook. ✓`
+      },
+      3: {
+        tag: "STAGE 03: TRIVY CVE ADMISSION GATE",
+        title: "Automated Zero-Day Vulnerability Scanning",
+        desc: "The Trivy security scanner analyzes every binary, library, and OS dependency. If any CVE with HIGH or CRITICAL severity is discovered without a cryptographically signed exemption waiver, deployment is immediately aborted.",
+        points: [
+          "Zero tolerance for Critical and High CVSS vulnerabilities.",
+          "Generates CycloneDX and SPDX Software Bill of Materials (SBOM)."
+        ],
+        terminalTitle: "trivy-scanner: admission-controller.log",
+        terminalLog: `[2026-11-09T16:25:08Z] TRIVY: Scanning 428 OS packages & 84 Node modules...
+[2026-11-09T16:25:09Z] ANALYSIS: Scanning known CVE vulnerability database (v2026.11.08)
+[2026-11-09T16:25:10Z] RESULT: 0 Critical, 0 High, 2 Low (Ignored per policy)
+[2026-11-09T16:25:10Z] SBOM: CycloneDX JSON generated & signed with local notary
+[2026-11-09T16:25:11Z] ADMISSION GATE: PASSED. Container approved for secret binding. ✓`
+      },
+      4: {
+        tag: "STAGE 04: OPENBAO EPHEMERAL SECRET INJECTION",
+        title: "Zero-Trust Secrets & Envelope Encryption",
+        desc: "OpenBao dynamically generates short-lived database credentials, API tokens, and TLS certificates. Secrets are injected into memory via tmpfs without ever being written to disk, Git, or environment logs.",
+        points: [
+          "Dynamic credentials rotate automatically every 60 minutes.",
+          "Shamir 3-of-5 unsealed vault engine prevents administrative exfiltration."
+        ],
+        terminalTitle: "openbao-vault: secret-lease.log",
+        terminalLog: `[2026-11-09T16:25:12Z] OPENBAO: Authenticating app role 'core-api-runner' via mTLS
+[2026-11-09T16:25:12Z] POLICY: Evaluating RBAC path 'secret/data/production/core-api/*'
+[2026-11-09T16:25:13Z] DYNAMIC: Generating ephemeral PostgreSQL credentials (TTL: 3600s)
+[2026-11-09T16:25:13Z] INJECTION: Secret bundle written to non-swappable /run/secrets/env
+[2026-11-09T16:25:14Z] AUDIT: Encrypted audit log streamed to immutable log sink. ✓`
+      },
+      5: {
+        tag: "STAGE 05: ISOLATED CONTAINER EXECUTION",
+        title: "Hardened Non-Root Network Execution",
+        desc: "The native SovereignStack Deployment Engine launches the validated container on an isolated Docker bridge subnet. All incoming traffic is routed through the internal mTLS proxy with WebAuthn/OIDC authentication enforcement.",
+        points: [
+          "Rootless user namespaces prevent container breakout exploits.",
+          "Zero open public ports — all traffic strictly mediated by local Traefik edge."
+        ],
+        terminalTitle: "sovereign-engine: runtime-sandbox.log",
+        terminalLog: `[2026-11-09T16:25:15Z] SOVEREIGN-ENGINE: Starting container 'core-api-prod-01' on subnet 10.99.14.0/24
+[2026-11-09T16:25:15Z] SECURITY: User namespace uid=1001(non-root) gid=1001 enforced
+[2026-11-09T16:25:16Z] PROXY: Traefik edge router registered route: https://api.internal.local
+[2026-11-09T16:25:16Z] HEALTHCHECK: HTTP GET /healthz returned 200 OK (latency: 1.2ms)
+[2026-11-09T16:25:17Z] DEPLOYMENT COMPLETE: Service live and healthy. 🚀`
+      }
+    };
+
+    let currentPipelineStep = 1;
+
+    function setPipelineStep(step) {
+      currentPipelineStep = step;
+      const data = pipelineData[step];
+
+      for (let i = 1; i <= 5; i++) {
+        const btn = document.getElementById(`pipelineBtn${i}`);
+        if (i === step) {
+          btn.className = "pipeline-step-btn text-left p-4 rounded-xl border border-brand-500 bg-brand-950/40 text-white transition-all shadow-lg shadow-brand-500/10";
+        } else {
+          btn.className = "pipeline-step-btn text-left p-4 rounded-xl border border-surface-border bg-surface-card hover:border-slate-500 text-slate-300 transition-all";
+        }
+      }
+
+      document.getElementById('pipelineStageTag').innerText = data.tag;
+      document.getElementById('pipelineStageTitle').innerText = data.title;
+      document.getElementById('pipelineStageDesc').innerText = data.desc;
+      document.getElementById('pipelineTerminalTitle').innerText = data.terminalTitle;
+      document.getElementById('pipelineTerminalContent').innerText = data.terminalLog;
+      document.getElementById('pipelineStepCounter').innerText = `Step ${step} of 5`;
+
+      const pointsContainer = document.getElementById('pipelineStagePoints');
+      pointsContainer.innerHTML = data.points.map(pt => `
+        <div class="flex items-start gap-2 text-xs text-slate-300">
+          <i data-lucide="check" class="w-4 h-4 text-emerald-400 shrink-0 mt-0.5"></i>
+          <span>${pt}</span>
+        </div>
+      `).join('');
+
+      lucide.createIcons();
+    }
+
+    function nextPipelineStep() {
+      const next = currentPipelineStep >= 5 ? 1 : currentPipelineStep + 1;
+      setPipelineStep(next);
+    }
+
+    function prevPipelineStep() {
+      const prev = currentPipelineStep <= 1 ? 5 : currentPipelineStep - 1;
+      setPipelineStep(prev);
+    }
+
+    // 4. FAQ Accordion Toggle
+    function toggleFaq(index) {
+      const content = document.getElementById(`faqContent${index}`);
+      const icon = document.getElementById(`faqIcon${index}`);
+      const isHidden = content.classList.contains('hidden');
+
+      for (let i = 1; i <= 5; i++) {
+        const c = document.getElementById(`faqContent${i}`);
+        const ic = document.getElementById(`faqIcon${i}`);
+        if (c && ic) {
+          c.classList.add('hidden');
+          ic.classList.remove('rotate-180');
+        }
+      }
+
+      if (isHidden) {
+        content.classList.remove('hidden');
+        icon.classList.add('rotate-180');
+      }
+    }
+
+    // 5. Architecture Meeting Modal Actions
+    function openMeetingModal() {
+      document.getElementById('meetingModal').classList.remove('hidden');
+    }
+
+    function closeMeetingModal() {
+      document.getElementById('meetingModal').classList.add('hidden');
+      document.getElementById('meetingForm').classList.remove('hidden');
+      document.getElementById('meetingSuccessState').classList.add('hidden');
+    }
+
+    async function submitMeetingForm(e) {
+      e.preventDefault();
+      const form = document.getElementById('meetingForm');
+      const submitBtn = document.getElementById('meetingSubmitBtn');
+      const submitBtnText = document.getElementById('submitBtnText');
+      const errorMsg = document.getElementById('formErrorMessage');
+
+      submitBtn.disabled = true;
+      submitBtnText.innerText = 'Submitting Request...';
+      errorMsg.classList.add('hidden');
+
+      try {
+        const formData = new FormData(form);
+        const response = await fetch('https://formspree.io/f/mbggnjwk', {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'Accept': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          form.reset();
+          form.classList.add('hidden');
+          document.getElementById('meetingSuccessState').classList.remove('hidden');
+        } else {
+          const data = await response.json();
+          if (data && data.errors && data.errors.length > 0) {
+            errorMsg.innerText = data.errors.map(err => err.message).join(', ');
+          } else {
+            errorMsg.innerText = 'Oops! There was a problem submitting your request. Please try again.';
+          }
+          errorMsg.classList.remove('hidden');
+        }
+      } catch (err) {
+        errorMsg.innerText = 'Network error. Please check your connection and try again.';
+        errorMsg.classList.remove('hidden');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtnText.innerText = 'Schedule 30-Min Architecture Meeting';
+        lucide.createIcons();
+      }
+    }
+  </script>
+</body>
+</html>
